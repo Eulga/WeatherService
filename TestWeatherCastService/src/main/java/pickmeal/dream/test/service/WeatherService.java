@@ -51,7 +51,6 @@ public class WeatherService {
 	
 	private String service_key = "U5Gbgs6jQKOEWClQj8cmzxsDET3UIUEj4HUop%2Bz%2F2%2Fx2bN4gOFK54mAOshV7jEN3IeG%2FNT8tTjexU5OfyjY9Sg%3D%3D"; //API 일반키
 	
-
 	public Weather getWeather(MyLocation myLocation) {
 		LocalDate now = LocalDate.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
