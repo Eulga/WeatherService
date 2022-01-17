@@ -15,7 +15,7 @@
 	<div id="weatherWrap">
         <div id="weather">
             <img src="https://img.icons8.com/dusk/128/000000/sun--v1.png"/>
-            <div class="temperatureWrap"><span class="temperature">9</span><span class="symbol">&#8451;</span></div>
+            <div class="temperatureWrap"><span class="temperature">${weather.temperature }</span><span class="symbol">&#8451;</span></div>
         </div>
         <div id="forecast">
             <div class="forecastItem">
