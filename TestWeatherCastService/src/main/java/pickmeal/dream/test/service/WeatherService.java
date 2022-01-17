@@ -87,6 +87,7 @@ public class WeatherService {
 	}
 	
 	public WeatherCommand getPickMealTypeWeather(Weather weather) {
+		log.info(weather.toString());
 		WeatherCommand wc = new WeatherCommand();
 		if(weather.getT1h() < 0) {
 			wc.setTemperature((int)Math.floor(weather.getT1h()));
