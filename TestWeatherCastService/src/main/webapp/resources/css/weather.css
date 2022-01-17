@@ -1,0 +1,96 @@
+@charset "UTF-8";
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#weatherWrap {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    height: 550px;
+    border: #ffecec 3px solid;
+    border-radius: 50px;
+}
+#weather {
+    flex: 4;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 50%;
+}
+
+#weather img {
+    flex: 1;
+    transform: scale(0.8);
+}
+
+#weather .temperatureWrap {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+#weather .temperatureWrap .temperature {
+    font-size: 4.3rem;
+}
+
+#weather .temperatureWrap .symbol {
+    font-size: 1.7rem;
+}
+
+#forecast {
+    flex: 3;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+#forecast .forecastItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: center;
+}
+
+#forecast .temperatureWrap {
+    display: flex;
+    justify-content: center;
+}
+
+#forecast .forecastItem img {
+    transform: scale(0.8)
+}
+
+#forecast .forecastItem .temperature {
+    font-size: 1rem;
+}
+#forecast .forecastItem .symbol {
+    margin-left: 0.1rem;
+    font-size: 0.5rem;
+}
+
+#howAboutThis {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border-top: #ffecec 2px solid;
+    border-bottom: #ffecec 2px solid;
+}
+
+#wetherMenu {
+    flex: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+#wetherMenu img {
+    transform: scale(1.6);
+}
+
+#wetherMenu .weatherMenuName {
+    font-size: 2rem;
+}

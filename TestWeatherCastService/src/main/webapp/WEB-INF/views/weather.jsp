@@ -6,36 +6,46 @@
 <head>
 <meta charset="UTF-8">
 <title>날씨와 날씨에 따른 메뉴 추천</title>
+<link href="${pageContext.request.contextPath}/resources/css/weather.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 	<c:set var="now" value="<%=new java.util.Date()%>" />
 	<c:set var="nowHour"><fmt:formatDate value="${now}" pattern="HH" /></c:set>
 	
-	<div class="weatherWrapper">
-		${weather.temperature }℃<br>
-		<c:choose>
-			<c:when test="${weather.sky eq 1}">
-				<c:choose>
-					<c:when test="${nowHour > 7 || nowHour < 18 }">
-						<img src="https://img.icons8.com/nolan/64/smiling-sun.png"/>
-					</c:when>
-					<c:otherwise>
-						<img src="https://img.icons8.com/nolan/64/bright-moon.png"/>
-					</c:otherwise>
-				</c:choose>
-			</c:when>
-			<c:when test="${weather.sky eq 2}">
-				<img src="https://img.icons8.com/nolan/64/clouds.png"/>
-			</c:when>
-			<c:when test="${weather.sky eq 3}">
-				<img src="https://img.icons8.com/nolan/64/rain.png"/>
-			</c:when>
-			<c:when test="${weather.sky eq 4}">
-	  			<img src="https://img.icons8.com/nolan/64/snow.png"/>
-			</c:when>
-		</c:choose>
-		${weather.menuName }
-		<c:url value="/chat" />
-	</div>
+	<div id="weatherWrap">
+        <div id="weather">
+            <img src="https://img.icons8.com/dusk/128/000000/sun--v1.png"/>
+            <div class="temperatureWrap"><span class="temperature">9</span><span class="symbol">&#8451;</span></div>
+        </div>
+        <div id="forecast">
+            <div class="forecastItem">
+                <span>오전 8시</span>
+                <img src="https://img.icons8.com/dusk/64/000000/sun--v2.png"/>
+                <div class="temperatureWrap"><span class="temperature">2</span><span class="symbol">&#8451;</span></div>
+            </div>
+            <div class="forecastItem">
+                <span>오후 12시</span>
+                <img src="https://img.icons8.com/dusk/64/000000/sun--v2.png"/>
+                <div class="temperatureWrap"><span class="temperature">13</span><span class="symbol">&#8451;</span></div>
+            </div>
+            <div class="forecastItem">
+                <span>오후 18시</span>
+                <img src="https://img.icons8.com/dusk/64/000000/sun--v2.png"/>
+                <div class="temperatureWrap"><span class="temperature">11</span><span class="symbol">&#8451;</span></div>
+            </div>
+            <div class="forecastItem">
+                <span>오후 22시</span>
+                <img src="https://img.icons8.com/dusk/64/000000/sun--v2.png"/>
+                <div class="temperatureWrap"><span class="temperature">3</span><span class="symbol">&#8451;</span></div>
+            </div>
+        </div>
+        <div id="howAboutThis">
+            맑고 춥네 이거 어때?
+        </div>
+        <div id="wetherMenu">
+            <img src="https://img.icons8.com/dusk/64/000000/sun--v2.png"/>
+            <span class="weatherMenuName">음식이름</span>
+        </div>
+    </div>
 </body>
 </html>
