@@ -55,8 +55,9 @@
 <script type="text/javascript">
 	$('#ajax_test').on('click', function(e) {
 		e.preventDefault();
+		var url = $(this).attr('href');
         $.ajax({
-        	url : $(this).attr('href'),
+        	url : url,
             async : true,
             type : "GET",
             success : function(data) {
@@ -64,7 +65,7 @@
                 $('#weatherWrap').children().remove();
                 // Contents 영역 교체
                 $('#weatherWrap').html(data);
-                changeUrl('','','goHome');
+                changeUrl('','',url);
             }
         });
 	})
