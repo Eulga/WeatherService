@@ -7,6 +7,7 @@
 <meta charset="UTF-8">
 <title>날씨와 날씨에 따른 메뉴 추천</title>
 <link href="${pageContext.request.contextPath}/resources/css/weather.css" rel="stylesheet" type="text/css" />
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 </head>
 <body>
 	<c:set var="now" value="<%=new java.util.Date()%>" />
@@ -47,5 +48,33 @@
             <span class="weatherMenuName">음식이름</span>
         </div>
     </div>
+    <a id="ajax_test" href="goHome">이동</a>
+    <input id="ajax_btn" type="button" value="버튼">
 </body>
+
+<script type="text/javascript">
+	$('#ajax_test').on('click', function(e) {
+		e.preventDefault();
+        $.ajax({
+        	url : $(this).attr('href'),
+            async : true,
+            type : "GET",
+            success : function(data) {
+            	// Contents 영역 삭제
+                $('#weatherWrap').children().remove();
+                // Contents 영역 교체
+                $('#weatherWrap').html(data);
+                changeUrl('','','goHome');
+            }
+        });
+	})
+	function changeUrl(state, title, url) { 
+		if (typeof (history.pushState) != "undefined") { //브라우저가 지원하는 경우 
+			history.pushState(state, title, url);
+		} else { 
+			location.href = url; //브라우저가 지원하지 않는 경우 페이지 이동처리
+		}
+	}
+
+</script>
 </html>

@@ -2,6 +2,7 @@ package pickmeal.dream.test.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -26,5 +27,12 @@ public class WeatherController {
 		mav.addObject("weather", wc);
 		mav.setViewName("weather");
 		return mav;
+	}
+	
+	@GetMapping("/goHome")
+	public String goHome(Model model) {
+		String abc = "데이터도 넘어갑니다";
+		model.addAttribute("abc", abc);
+		return "home";
 	}
 }
