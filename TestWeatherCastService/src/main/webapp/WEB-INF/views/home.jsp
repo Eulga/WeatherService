@@ -21,5 +21,8 @@
 	<p> ${abc } </p>
 	<p> loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong </p>
 </div>
+
+<c:import url="/weather"></c:import>
+
 </body>
 </html>

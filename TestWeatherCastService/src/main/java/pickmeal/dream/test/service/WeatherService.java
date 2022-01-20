@@ -10,6 +10,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +22,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j;
 import pickmeal.dream.test.dao.MenuDaoImpl;
+import pickmeal.dream.test.domain.Forecast;
 import pickmeal.dream.test.domain.MyLocation;
+import pickmeal.dream.test.domain.PickMealWeather;
 import pickmeal.dream.test.domain.Weather;
 import pickmeal.dream.test.domain.WeatherCommand;
 
@@ -47,7 +50,7 @@ public class WeatherService {
 
 	private String Short_term_weather_url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst";	// 초단기예보 : 매시간 30분 생성, 하늘상태
 	private String Short_term_live_weather_url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst"; // 초단기실황 : 매시간 30분 생성, 기온, 강수형태
-	private String Short_term_forecase_weather_url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"; // 단기예보 : 3시간단위 측정(02:00~23:00)
+	private String Short_term_forecast_weather_url = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"; // 단기예보 : 3시간단위 측정(02:00~23:00)
 	
 	private String service_key = "U5Gbgs6jQKOEWClQj8cmzxsDET3UIUEj4HUop%2Bz%2F2%2Fx2bN4gOFK54mAOshV7jEN3IeG%2FNT8tTjexU5OfyjY9Sg%3D%3D"; //API 일반키
 	
@@ -86,9 +89,9 @@ public class WeatherService {
 		return weather;
 	}
 	
-	public WeatherCommand getPickMealTypeWeather(Weather weather) {
+	public PickMealWeather getPickMealTypeWeather(Weather weather) {
 		log.info(weather.toString());
-		WeatherCommand wc = new WeatherCommand();
+		PickMealWeather wc = new PickMealWeather();
 		if(weather.getT1h() < 0) {
 			wc.setTemperature((int)Math.floor(weather.getT1h()));
 		} else {
@@ -115,7 +118,7 @@ public class WeatherService {
 	}
 	
 	//메뉴서비스로 빼야할지도?
-	public void getMenuDependingOnTheWeather(WeatherCommand wc) {
+	public String getMenuDependingOnTheWeather(PickMealWeather wc) {
 		int temperature;
 		if(wc.getTemperature() >= 25) {
 			temperature = 1;
@@ -127,7 +130,7 @@ public class WeatherService {
 		
 		List<String> menuList = menudao.findMenuByWeather(temperature, wc.getSky());
 		Random rand = new Random();
-		wc.setMenuName(menuList.get(rand.nextInt(menuList.size())));
+		return menuList.get(rand.nextInt(menuList.size()));
 	}
 	
 	/**
@@ -195,6 +198,114 @@ public class WeatherService {
 		for(String item : apiItemArray) { //사용하는 라인 나누기 ex) 실행결과 -> [basedate:xxx], [category:xxx], [nx:xx]
 			String[] itemPieces = item.split(",");
 			getCategoryAndValue(itemPieces, reqCodes, categoryAndValue);
+		}
+	}
+	
+	public Forecast getForecast(MyLocation ml) {
+		LocalDate now = LocalDate.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		String date = now.format(formatter);
+		
+		LocalTime nowTime = LocalTime.now();
+		formatter = DateTimeFormatter.ofPattern("HH");
+		String hour = nowTime.format(formatter);
+		
+		Forecast forecast = new Forecast();
+		forecast.setPmwList(getForecast(Short_term_forecast_weather_url, date, hour, ml.getNx(), ml.getNy()));
+		
+		return forecast;
+	}
+	
+	private List<PickMealWeather> getForecast(String url, String date, String hour, String nx, String ny) {
+		int ch = Integer.parseInt(hour);
+		
+		if(ch < 5) {
+			//하루를 뺐을 때 월이 바뀌는 경우를 만들어야됨
+			date = Integer.toString(Integer.parseInt(date)-1);
+		}
+		
+		url = url + "?serviceKey=" + service_key
+				+ "&numOfRows=1000"
+				+ "&pageNo=1"
+				+ "&base_date=" + date
+				+ "&base_time=0500"
+				+ "&nx=" + nx	
+				+ "&ny=" + ny
+				+ "&dataType=JSON";
+		
+		String[] apiItemArray = getWeatherApiInfo(url);
+		
+		List<PickMealWeather> pmwList = new ArrayList<PickMealWeather>();
+		HashMap<String, String> categoryAndValue = new HashMap<String, String>();
+		String[] reqCodes = {"TMP", "SKY", "PTY"};
+		
+		int timeNumber = 8;
+		for(String item : apiItemArray) { //사용하는 라인 나누기 ex) 실행결과 -> [basedate:xxx], [category:xxx], [nx:xx]
+			if(item.indexOf(date) != -1) {
+				if(item.indexOf("0800") != -1) {
+					String[] itemPieces = item.split(",");
+					getCategoryAndValue(itemPieces, reqCodes, categoryAndValue);
+				} else if (item.indexOf("1200") != -1) {
+					if(timeNumber < 12) {
+						addPmw(pmwList, categoryAndValue);
+						timeNumber = 12;
+						categoryAndValue.clear();
+					}
+					String[] itemPieces = item.split(",");
+					getCategoryAndValue(itemPieces, reqCodes, categoryAndValue);
+					
+				} else if (item.indexOf("1800") != -1) {
+					if(timeNumber < 18) {
+						addPmw(pmwList, categoryAndValue);
+						timeNumber = 18;
+						categoryAndValue.clear();
+					}
+					String[] itemPieces = item.split(",");
+					getCategoryAndValue(itemPieces, reqCodes, categoryAndValue);
+				} else if (item.indexOf("2200") != -1) {
+					if(timeNumber < 22) {
+						addPmw(pmwList, categoryAndValue);
+						timeNumber = 22;
+						categoryAndValue.clear();
+					}
+					String[] itemPieces = item.split(",");
+					getCategoryAndValue(itemPieces, reqCodes, categoryAndValue);
+				}
+			}
+		}
+		addPmw(pmwList, categoryAndValue);
+		
+		return pmwList;
+	}
+	
+	private void addPmw(List<PickMealWeather> pmwList, HashMap<String, String> categoryAndValue) {
+		double tmp = -999;
+		int sky = -1;
+		int pty = -1;
+		
+		for(Entry<String, String> cav : categoryAndValue.entrySet()) {
+			log.info(cav.getKey() + " " + cav.getValue());
+			
+			if(cav.getKey().equals("TMP")) {
+				double tmpp = Double.parseDouble(cav.getValue());
+				if (tmpp < 0) {
+					tmp = Math.floor(tmpp);
+				}else {
+					tmp = Math.ceil(tmpp);
+				}
+			} else if(cav.getKey().equals("SKY")) {
+				sky = Integer.parseInt(cav.getValue());
+			} else if(cav.getKey().equals("PTY")) {
+				pty = Integer.parseInt(cav.getValue());
+			}
+			
+			if (sky > -1 && pty > -1 && tmp > -999) {
+				Weather w = new Weather(tmp, sky, pty);
+				pmwList.add(getPickMealTypeWeather(w));
+				tmp = -999;
+				sky = -1;
+				pty = -1;
+			}
 		}
 	}
 

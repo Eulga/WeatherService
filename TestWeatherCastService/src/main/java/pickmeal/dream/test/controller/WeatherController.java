@@ -6,9 +6,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import pickmeal.dream.test.domain.Forecast;
 import pickmeal.dream.test.domain.MyLocation;
+import pickmeal.dream.test.domain.PickMealWeather;
 import pickmeal.dream.test.domain.Weather;
-import pickmeal.dream.test.domain.WeatherCommand;
 import pickmeal.dream.test.service.WeatherService;
 
 @Controller
@@ -20,11 +21,15 @@ public class WeatherController {
 	@GetMapping("/weather")
 	public ModelAndView weather() {
 		ModelAndView mav = new ModelAndView();
-		Weather weather = weatherService.getWeather(new MyLocation("89", "90"));
-		WeatherCommand wc = weatherService.getPickMealTypeWeather(weather);
-		weatherService.getMenuDependingOnTheWeather(wc);
-		
+		MyLocation ml = new MyLocation("89", "90");
+		Weather weather = weatherService.getWeather(ml);
+		PickMealWeather wc = weatherService.getPickMealTypeWeather(weather);
+		Forecast forecast = weatherService.getForecast(ml);
+		String menu = weatherService.getMenuDependingOnTheWeather(wc);
 		mav.addObject("weather", wc);
+		mav.addObject("forecast", forecast);
+		mav.addObject("menu", menu);
+		
 		mav.setViewName("weather");
 		return mav;
 	}
